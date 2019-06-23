@@ -32,17 +32,45 @@ var banner = function () {
     var imageBox = banner.querySelector("ul:first-child");
     var indicator = banner.querySelector("ul:last-child");
 
+    /*加过度*/
+    var addTransition = function () {
+        imageBox.style.transition = "all 0.2s";
+        imageBox.style.webkitTransform = "all 0.2s";
+    };
+
+    /*移除过度*/
+    var removeTransition = function () {
+        imageBox.style.transition = "none";
+        imageBox.style.webkitTransform = "none";
+    };
+
+    /*做位移*/
+    var translateX = function (x) {
+        imageBox.style.transform = "translateX(" + x + "px)";
+        imageBox.style.webkitTransform = "translateX(" + x + "px)";
+    };
+
     var index = 1;
     var timmer = setInterval(function () {
         index++;
-        /*加过度*/
-        imageBox.style.transition = "all 0.2s";
-        imageBox.style.webkitTransform = "all 0.2s";
 
-        /*做动画*/
-        imageBox.style.transform = "translateX(" + (-width * index) + "px)";
-        imageBox.style.webkitTransform = "translateX(" + (-width * index) + "px)";
+        addTransition()
+        translateX(-width * index);
     }, 3000);
+
+    imageBox.addEventListener("transitionend", function (evt) {
+        if (index >= 9) {
+            index = 1;
+            removeTransition();
+            translateX(-width * index);
+        } else if (index <= 0) {
+            index = 8;
+            removeTransition();
+            translateX(-width * index);
+        }
+
+        console.log("index: " + index);
+    })
 };
 
 var countDown = function () {
