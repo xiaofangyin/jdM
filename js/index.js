@@ -31,6 +31,7 @@ var banner = function () {
     var width = banner.offsetWidth;
     var imageBox = banner.querySelector("ul:first-child");
     var indicator = banner.querySelector("ul:last-child");
+    var points = indicator.querySelectorAll("li");
 
     /*加过度*/
     var addTransition = function () {
@@ -45,7 +46,7 @@ var banner = function () {
     };
 
     /*做位移*/
-    var translateX = function (x) {
+    var setTranslateX = function (x) {
         imageBox.style.transform = "translateX(" + x + "px)";
         imageBox.style.webkitTransform = "translateX(" + x + "px)";
     };
@@ -54,25 +55,79 @@ var banner = function () {
     var timmer = setInterval(function () {
         index++;
 
-        addTransition()
-        translateX(-width * index);
+        addTransition();
+        setTranslateX(-width * index);
     }, 3000);
 
     imageBox.addEventListener("transitionend", function (evt) {
         if (index >= 9) {
             index = 1;
             removeTransition();
-            translateX(-width * index);
+            setTranslateX(-width * index);
         } else if (index <= 0) {
             index = 8;
             removeTransition();
-            translateX(-width * index);
+            setTranslateX(-width * index);
         }
 
-        console.log("index: " + index);
-    })
+        setPoint();
+    });
+
+    var setPoint = function () {
+        for (var i = 0; i < points.length; i++) {
+            var obj = points[i];
+            obj.classList.remove("now");
+        }
+        points[index - 1].classList.add("now");
+    };
+
+    var startX = 0;
+    /*绑定事件*/
+    imageBox.addEventListener("touchstart", function (evt) {
+        console.log("touch start...");
+
+        clearInterval(timmer);
+        startX = evt.touches[0].clientX;
+    });
+
+    imageBox.addEventListener("touchmove", function (evt) {
+        console.log("touch move...");
+
+        var moveX = evt.touches[0].clientX;
+        var dis = moveX - startX;
+        var translateX = -index * width + dis;
+        removeTransition();
+        setTranslateX(translateX);
+    });
+
+    imageBox.addEventListener("touchend", function (evt) {
+        console.log("touch end...");
+
+    });
 };
 
 var countDown = function () {
+    var time = 2 * 60 * 60;
+    var spans = document.querySelector(".time").querySelectorAll("span");
 
+    var timer = setInterval(function () {
+        time--;
+        var hour = Math.floor(time / 3600);
+        var minute = Math.floor(time % 3600 / 60);
+        var second = time % 60;
+
+        spans[0].innerHTML = String(Math.floor(hour / 10));
+        spans[1].innerHTML = String(hour % 10);
+
+        spans[3].innerHTML = String(Math.floor(minute / 10));
+        spans[4].innerHTML = String(minute % 10);
+
+        spans[6].innerHTML = String(Math.floor(second / 10));
+        spans[7].innerHTML = String(second % 10);
+
+        if (time <= 0) {
+            clearInterval(timer);
+        }
+        console.log("time: " + time);
+    }, 1000);
 };
